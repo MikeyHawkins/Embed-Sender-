@@ -1,0 +1,9 @@
+Improve error handling and user feedback for webhook operations
+
+Update error logging and user-facing messages in `server.js` for both sending messages and setting up webhooks to provide more specific details and guidance.
+
+Replit-Commit-Author: Agent
+Replit-Commit-Session-Id: be08a551-79f8-4b85-ad36-ed4fda09a25f
+Replit-Commit-Checkpoint-Type: intermediate_checkpoint
+Replit-Commit-Event-Id: 6d4540c5-8d8a-4a50-89a6-31b621257b21
+Replit-Commit-Screenshot-Url: https://storage.googleapis.com/screenshot-production-us-central1/65ac899f-18e0-4656-9894-d40d80ca212a/be08a551-79f8-4b85-ad36-ed4fda09a25f/YCrT6x2

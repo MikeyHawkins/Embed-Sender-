@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Message Sender</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .main-wrapper {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #5865F2;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #5865F2;
+        }
+
+        select {
+            cursor: pointer;
+            background: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-option.selected {
+            border-color: #5865F2;
+            background: #f0f2ff;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 30px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #5865F2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #4752C4;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .setup-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .setup-link a {
+            color: #5865F2;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .setup-link a:hover {
+            color: #4752C4;
+            text-decoration: underline;
+        }
+
+        .preview-section {
+            position: sticky;
+            top: 20px;
+        }
+
+        .preview-section h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .discord-preview {
+            background: #36393f;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Whitney', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .discord-message {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .discord-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .discord-content {
+            flex: 1;
+        }
+
+        .discord-username {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .discord-embed {
+            background: #2f3136;
+            border-left: 4px solid #ED4245;
+            border-radius: 4px;
+            padding: 12px 16px;
+            max-width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        .discord-embed-description {
+            color: #dcddde;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .discord-embed-image {
+            margin-top: 12px;
+            border-radius: 4px;
+            max-width: 100%;
+            display: none;
+        }
+
+        .discord-embed-image.visible {
+            display: block;
+        }
+
+        .preview-placeholder {
+            color: #72767d;
+            font-style: italic;
+        }
+
+        .setup-section {
+            background: #f0f2ff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .setup-section h2 {
+            color: #5865F2;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .setup-section.hidden {
+            display: none;
+        }
+
+        .invite-btn {
+            background: #5865F2;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        .invite-btn:hover {
+            background: #4752C4;
+        }
+
+        .message-section.hidden {
+            display: none;
+        }
+
+        .code-output {
+            background: #2b2b2b;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            display: none;
+        }
+
+        .code-output.visible {
+            display: block;
+        }
+
+        .manage-servers-btn {
+            background: #5865F2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .manage-servers-btn:hover {
+            background: #4752C4;
+        }
+
+        .manage-servers-btn.visible {
+            display: inline-block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #5865F2;
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .server-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .server-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .server-item:hover {
+            border-color: #5865F2;
+            background: #f0f2ff;
+        }
+
+        .server-item.active {
+            border-color: #57F287;
+            background: #f0fff4;
+        }
+
+        .server-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .server-info {
+            flex: 1;
+        }
+
+        .server-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .server-channels {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .server-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .server-actions button {
+            padding: 8px 16px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .btn-select {
+            background: #57F287;
+        }
+
+        .btn-select:hover {
+            background: #3BA55D;
+        }
+
+        .btn-remove {
+            background: #ED4245;
+        }
+
+        .btn-remove:hover {
+            background: #C03537;
+        }
+
+        .add-server-btn {
+            width: 100%;
+            background: #5865F2;
+        }
+
+        .add-server-btn:hover {
+            background: #4752C4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .login-section {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .login-section.hidden {
+            display: none;
+        }
+
+        .login-section h2 {
+            color: #5865F2;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .login-section p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .discord-login-btn {
+            background: #5865F2;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .discord-login-btn:hover {
+            background: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: #f0f2ff;
+            border-radius: 8px;
+        }
+
+        .user-info.hidden {
+            display: none;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .user-details {
+            flex: 1;
+            text-align: left;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: #ED4245;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #C03537;
+        }
+
+        .app-content.hidden {
+            display: none;
+        }
+
+        .image-upload-box {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .image-upload-box:hover {
+            border-color: #5865F2;
+            background: #f0f2ff;
+            color: #5865F2;
+        }
+
+        .image-upload-box.has-image {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .image-upload-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-upload-box-large {
+            min-height: 150px;
+            background: white;
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #999;
+            padding: 20px;
+        }
+
+        .image-upload-box-large:hover {
+            border-color: #5865F2;
+            background: #f0f2ff;
+            color: #5865F2;
+        }
+
+        .image-upload-box-large.has-image {
+            padding: 0;
+            overflow: hidden;
+            min-height: auto;
+        }
+
+        .image-upload-box-large img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            max-height: 300px;
+        }
+
+        .discord-embed-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .discord-embed-author-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .discord-embed-author-name {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .discord-embed-title {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .discord-embed-field {
+            margin-top: 12px;
+        }
+
+        .discord-embed-field-name {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .discord-embed-field-value {
+            color: #dcddde;
+            font-size: 14px;
+        }
+
+        .discord-embed-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #4f545c;
+        }
+
+        .discord-embed-footer-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .discord-embed-footer-text {
+            color: #72767d;
+            font-size: 12px;
+        }
+
+        .ai-improve-btn {
+            margin-top: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .ai-improve-btn:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #65408b 100%);
+            transform: translateY(-1px);
+        }
+
+        .ai-improve-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .setup-method-btn {
+            padding: 12px;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .setup-method-btn:hover {
+            background: #e8e8e8;
+            transform: translateY(-1px);
+        }
+
+        .setup-method-btn.active {
+            background: #5865F2;
+            color: white;
+            border-color: #5865F2;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- Login Screen -->
+        <div class="login-section" id="loginSection">
+            <h1>📨 Discord Message Sender</h1>
+            <h2>Welcome!</h2>
+            <p>Log in with your Discord account to start sending custom-branded messages to your servers.</p>
+            <a href="/auth/discord" class="discord-login-btn">
+                <svg width="20" height="20" viewBox="0 0 71 55" fill="none" style="vertical-align: middle; margin-right: 8px;">
+                    <path d="M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.440769 45.4204 0.525289C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.525289C25.5141 0.443589 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385761 45.5576C6.45866 50.0174 12.3413 52.7249 18.1147 54.5195C18.2071 54.5477 18.305 54.5139 18.3638 54.4378C19.7295 52.5728 20.9469 50.6063 21.9907 48.5383C22.0523 48.4172 21.9935 48.2735 21.8676 48.2256C19.9366 47.4931 18.0979 46.6 16.3292 45.5858C16.1893 45.5041 16.1781 45.304 16.3068 45.2082C16.679 44.9293 17.0513 44.6391 17.4067 44.3461C17.471 44.2926 17.5606 44.2813 17.6362 44.3151C29.2558 49.6202 41.8354 49.6202 53.3179 44.3151C53.3935 44.2785 53.4831 44.2898 53.5502 44.3433C53.9057 44.6363 54.2779 44.9293 54.6529 45.2082C54.7816 45.304 54.7732 45.5041 54.6333 45.5858C52.8646 46.6197 51.0259 47.4931 49.0921 48.2228C48.9662 48.2707 48.9102 48.4172 48.9718 48.5383C50.038 50.6034 51.2554 52.5699 52.5959 54.435C52.6519 54.5139 52.7526 54.5477 52.845 54.5195C58.6464 52.7249 64.529 50.0174 70.6019 45.5576C70.6551 45.5182 70.6887 45.459 70.6943 45.3942C72.1747 30.0791 68.2147 16.7757 60.1968 4.9823C60.1772 4.9429 60.1437 4.9147 60.1045 4.8978ZM23.7259 37.3253C20.2276 37.3253 17.3451 34.1136 17.3451 30.1693C17.3451 26.225 20.1717 23.0133 23.7259 23.0133C27.308 23.0133 30.1626 26.2532 30.1066 30.1693C30.1066 34.1136 27.28 37.3253 23.7259 37.3253ZM47.3178 37.3253C43.8196 37.3253 40.9371 34.1136 40.9371 30.1693C40.9371 26.225 43.7636 23.0133 47.3178 23.0133C50.9 23.0133 53.7545 26.2532 53.6986 30.1693C53.6986 34.1136 50.9 37.3253 47.3178 37.3253Z" fill="white"/>
+                </svg>
+                Log in with Discord
+            </a>
+        </div>
+
+        <!-- App Content (shown after login) -->
+        <div class="app-content hidden" id="appContent">
+            <h1>📨 Discord Message Sender</h1>
+            
+            <!-- User Info -->
+            <div class="user-info hidden" id="userInfo">
+                <img src="" alt="User Avatar" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <div class="user-name" id="userName"></div>
+                    <div class="user-email" id="userEmail"></div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+
+            <button class="manage-servers-btn" id="manageServersBtn">🌐 Manage Servers</button>
+            
+            <div class="setup-section" id="setupSection">
+            <h2>🔧 First Time Setup</h2>
+            <p style="margin-bottom: 20px; color: #666;">Set up your Discord server to start sending messages</p>
+            
+            <div class="form-group">
+                <label><strong>Setup Method:</strong></label>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="button" id="botSetupBtn" class="setup-method-btn active" style="flex: 1;">
+                        🤖 Auto-Setup with Bot
+                    </button>
+                    <button type="button" id="manualSetupBtn" class="setup-method-btn" style="flex: 1;">
+                        ✏️ Manual Webhook Entry
+                    </button>
+                </div>
+            </div>
+
+            <div id="botSetupSection">
+                <div style="margin-bottom: 20px;">
+                    <strong>Step 1:</strong> Click the invite link to add the bot to your server
+                    <br>
+                    <a href="" id="setupInviteLink" class="invite-btn" target="_blank">📥 Add Bot to Server</a>
+                </div>
+
+                <div class="form-group">
+                    <label for="setupServerId"><strong>Step 2:</strong> Enter your Server ID</label>
+                    <input type="text" id="setupServerId" placeholder="1234567890123456789" required>
+                    <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                        Right-click your server icon in Discord → Copy Server ID (Enable Developer Mode in Settings first)
+                    </small>
+                </div>
+
+                <button type="button" id="generateWebhooksBtn" style="margin-top: 10px;">⚙️ Step 3: Generate Webhooks</button>
+            </div>
+
+            <div id="manualSetupSection" style="display: none;">
+                <div class="form-group">
+                    <label for="manualInviteLink">Server Invite Link</label>
+                    <input type="text" id="manualInviteLink" placeholder="https://discord.gg/xxxxx or discord.gg/xxxxx" required>
+                    <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                        Right-click your server → Invite People → Copy invite link
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="manualWebhookUrl">Webhook URL</label>
+                    <input type="text" id="manualWebhookUrl" placeholder="https://discord.com/api/webhooks/..." required>
+                    <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                        In Discord: Channel Settings → Integrations → Webhooks → Copy Webhook URL
+                    </small>
+                </div>
+
+                <button type="button" id="saveManualWebhookBtn" style="margin-top: 10px;">💾 Save Webhook</button>
+            </div>
+
+            <div class="status" id="setupStatus"></div>
+
+            <div class="code-output" id="codeOutput">
+                <strong>✅ Setup Complete! Copy this code and paste it into your server.js file:</strong>
+                <pre id="generatedCode"></pre>
+            </div>
+        </div>
+
+        <div class="message-section" id="messageSection">
+            <div class="container">
+                <div class="form-section">
+                    <form id="messageForm">
+            <div class="form-group">
+                <label for="channel">Channel</label>
+                <select id="channel" required>
+                    <option value="">Select a channel...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="authorName">Author Name (Optional)</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="authorName" placeholder="Author name" style="flex: 1;">
+                    <input type="file" id="authorIconFile" accept="image/*" style="display: none;">
+                    <div class="image-upload-box" id="authorIconBox" title="Click to upload author icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Title (Optional)</label>
+                <input type="text" id="title" placeholder="Embed title">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description (Optional)</label>
+                <textarea id="description" placeholder="Enter your description here..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="fieldName">Field Name (Optional)</label>
+                <input type="text" id="fieldName" placeholder="Field name">
+            </div>
+
+            <div class="form-group">
+                <label for="fieldValue">Field Value (Optional)</label>
+                <input type="text" id="fieldValue" placeholder="Field value">
+            </div>
+
+            <div class="form-group">
+                <label>Embed Image (Optional)</label>
+                <input type="file" id="embedImageFile" accept="image/*" style="display: none;">
+                <div class="image-upload-box-large" id="embedImageBox" title="Click to upload embed image">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                    </svg>
+                    <div style="margin-top: 8px; font-size: 12px; color: #999;">Click to upload image</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="footerText">Footer Text (Optional)</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="footerText" placeholder="Footer text" style="flex: 1;">
+                    <input type="file" id="footerIconFile" accept="image/*" style="display: none;">
+                    <div class="image-upload-box" id="footerIconBox" title="Click to upload footer icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Select Color</label>
+                <div class="color-options">
+                    <div class="color-option selected" data-color="red">
+                        <div class="color-preview" style="background: #ED4245;"></div>
+                        <span>Red</span>
+                    </div>
+                    <div class="color-option" data-color="green">
+                        <div class="color-preview" style="background: #57F287;"></div>
+                        <span>Green</span>
+                    </div>
+                    <div class="color-option" data-color="blue">
+                        <div class="color-preview" style="background: #5865F2;"></div>
+                        <span>Blue</span>
+                    </div>
+                    <div class="color-option" data-color="yellow">
+                        <div class="color-preview" style="background: #FEE75C;"></div>
+                        <span>Yellow</span>
+                    </div>
+                    <div class="color-option" data-color="purple">
+                        <div class="color-preview" style="background: #EB459E;"></div>
+                        <span>Purple</span>
+                    </div>
+                    <div class="color-option" data-color="orange">
+                        <div class="color-preview" style="background: #F26522;"></div>
+                        <span>Orange</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="customColor">Custom Hex Color (Optional)</label>
+                <input type="text" id="customColor" placeholder="#FFFFFF" pattern="^#[0-9A-Fa-f]{6}$" maxlength="7">
+                <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                    Enter a custom hex color (e.g., #FF5733) - overrides selected color above
+                </small>
+            </div>
+
+                        <button type="submit" id="submitBtn">Send Message</button>
+                        <button type="button" id="aiImproveBtn" class="ai-improve-btn">✨ AI Improve</button>
+                    </form>
+
+                    <div class="status" id="status"></div>
+                </div>
+
+                <div class="preview-section">
+                    <h2>Preview</h2>
+                    <div class="discord-preview">
+                        <div class="discord-message">
+                            <img id="previewAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Server Logo" class="discord-avatar">
+                            <div class="discord-content">
+                                <div class="discord-username" id="previewUsername">Discord Server</div>
+                                <div class="discord-embed" id="previewEmbed">
+                                    <div class="discord-embed-author" id="previewAuthor" style="display: none;">
+                                        <img id="previewAuthorIcon" class="discord-embed-author-icon" alt="Author icon">
+                                        <div class="discord-embed-author-name" id="previewAuthorName"></div>
+                                    </div>
+                                    <div class="discord-embed-title" id="previewTitle" style="display: none;"></div>
+                                    <div class="discord-embed-description" id="previewDescription">
+                                        <span class="preview-placeholder">Your description will appear here...</span>
+                                    </div>
+                                    <div class="discord-embed-field" id="previewField" style="display: none;">
+                                        <div class="discord-embed-field-name" id="previewFieldName"></div>
+                                        <div class="discord-embed-field-value" id="previewFieldValue"></div>
+                                    </div>
+                                    <img id="previewEmbedImage" class="discord-embed-image" alt="Embed image">
+                                    <div class="discord-embed-footer" id="previewFooter" style="display: none;">
+                                        <img id="previewFooterIcon" class="discord-embed-footer-icon" alt="Footer icon">
+                                        <div class="discord-embed-footer-text" id="previewFooterText"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div> <!-- End app-content -->
+        
+        <!-- Server Management Modal -->
+        <div class="modal" id="serverModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🌐 Manage Servers</h2>
+                    <button class="close-modal" id="closeModal">&times;</button>
+                </div>
+                <div class="server-list" id="serverList"></div>
+                <button class="add-server-btn" id="addServerBtn">➕ Add New Server</button>
+            </div>
+        </div>
+    </div> <!-- End main-wrapper -->
+
+    <script>
+        // Authentication check
+        const loginSection = document.getElementById('loginSection');
+        const appContent = document.getElementById('appContent');
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Check authentication status on page load
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/user');
+                const data = await response.json();
+                
+                if (data.user) {
+                    // User is logged in
+                    loginSection.classList.add('hidden');
+                    appContent.classList.remove('hidden');
+                    userInfo.classList.remove('hidden');
+                    
+                    // Display user info
+                    userAvatar.src = data.user.avatar;
+                    userName.textContent = data.user.username;
+                    userEmail.textContent = data.user.email || 'No email';
+                    
+                    // Load app data
+                    loadApp();
+                } else {
+                    // User is not logged in
+                    loginSection.classList.remove('hidden');
+                    appContent.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                loginSection.classList.remove('hidden');
+                appContent.classList.add('hidden');
+            }
+        }
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout', { method: 'POST' });
+                window.location.reload();
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        const colorOptions = document.querySelectorAll('.color-option');
+        const form = document.getElementById('messageForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        const customColorInput = document.getElementById('customColor');
+        const channelSelect = document.getElementById('channel');
+        
+        // Form inputs
+        const authorNameInput = document.getElementById('authorName');
+        const titleInput = document.getElementById('title');
+        const descriptionInput = document.getElementById('description');
+        const fieldNameInput = document.getElementById('fieldName');
+        const fieldValueInput = document.getElementById('fieldValue');
+        const footerTextInput = document.getElementById('footerText');
+        
+        // Image upload elements
+        const authorIconFile = document.getElementById('authorIconFile');
+        const authorIconBox = document.getElementById('authorIconBox');
+        const embedImageFile = document.getElementById('embedImageFile');
+        const embedImageBox = document.getElementById('embedImageBox');
+        const footerIconFile = document.getElementById('footerIconFile');
+        const footerIconBox = document.getElementById('footerIconBox');
+        
+        // Preview elements
+        const previewEmbed = document.getElementById('previewEmbed');
+        const previewAuthor = document.getElementById('previewAuthor');
+        const previewAuthorIcon = document.getElementById('previewAuthorIcon');
+        const previewAuthorName = document.getElementById('previewAuthorName');
+        const previewTitle = document.getElementById('previewTitle');
+        const previewDescription = document.getElementById('previewDescription');
+        const previewField = document.getElementById('previewField');
+        const previewFieldName = document.getElementById('previewFieldName');
+        const previewFieldValue = document.getElementById('previewFieldValue');
+        const previewEmbedImage = document.getElementById('previewEmbedImage');
+        const previewFooter = document.getElementById('previewFooter');
+        const previewFooterIcon = document.getElementById('previewFooterIcon');
+        const previewFooterText = document.getElementById('previewFooterText');
+        const previewAvatar = document.getElementById('previewAvatar');
+        const previewUsername = document.getElementById('previewUsername');
+        
+        let selectedColor = 'red';
+        let serverName = 'Discord Server';
+        let serverLogo = 'https://cdn.discordapp.com/embed/avatars/0.png';
+        
+        // Store uploaded images as base64
+        let authorIconData = null;
+        let embedImageData = null;
+        let footerIconData = null;
+
+        const setupSection = document.getElementById('setupSection');
+        const messageSection = document.getElementById('messageSection');
+        const setupInviteLink = document.getElementById('setupInviteLink');
+        const generateWebhooksBtn = document.getElementById('generateWebhooksBtn');
+        const setupStatus = document.getElementById('setupStatus');
+        const codeOutput = document.getElementById('codeOutput');
+        const generatedCode = document.getElementById('generatedCode');
+
+        function loadApp() {
+
+        // Load bot client ID for invite link
+        fetch('/client-id')
+            .then(r => r.json())
+            .then(data => {
+                const clientId = data.clientId;
+                setupInviteLink.href = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=536870912&scope=bot`;
+            });
+
+        // Load channels and server info on page load
+        fetch('/channels')
+            .then(r => r.json())
+            .then(data => {
+                if (data.channels.length > 0) {
+                    // Already configured, show message section
+                    setupSection.classList.add('hidden');
+                    messageSection.classList.remove('hidden');
+                    manageServersBtn.classList.add('visible');
+                    
+                    serverName = data.serverName || 'Discord Server';
+                    serverLogo = data.serverLogo || 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    
+                    // Populate channel dropdown
+                    data.channels.forEach(ch => {
+                        const option = document.createElement('option');
+                        option.value = ch.value;
+                        option.textContent = ch.label;
+                        channelSelect.appendChild(option);
+                    });
+                    
+                    // Update preview with server info
+                    updatePreview();
+                } else {
+                    // Not configured, show setup section
+                    setupSection.classList.remove('hidden');
+                    messageSection.classList.add('hidden');
+                    manageServersBtn.classList.remove('visible');
+                }
+            })
+            .catch(err => {
+                console.error('Failed to load channels:', err);
+                setupSection.classList.remove('hidden');
+                messageSection.classList.add('hidden');
+                manageServersBtn.classList.remove('visible');
+            });
+
+        // Setup method toggle
+        const botSetupBtn = document.getElementById('botSetupBtn');
+        const manualSetupBtn = document.getElementById('manualSetupBtn');
+        const botSetupSection = document.getElementById('botSetupSection');
+        const manualSetupSection = document.getElementById('manualSetupSection');
+
+        botSetupBtn.addEventListener('click', () => {
+            botSetupBtn.classList.add('active');
+            manualSetupBtn.classList.remove('active');
+            botSetupSection.style.display = 'block';
+            manualSetupSection.style.display = 'none';
+        });
+
+        manualSetupBtn.addEventListener('click', () => {
+            manualSetupBtn.classList.add('active');
+            botSetupBtn.classList.remove('active');
+            manualSetupSection.style.display = 'block';
+            botSetupSection.style.display = 'none';
+        });
+
+        // Generate webhooks button (bot method)
+        generateWebhooksBtn.addEventListener('click', async () => {
+            const serverId = document.getElementById('setupServerId').value;
+            
+            if (!serverId) {
+                showSetupStatus('Please enter your Server ID', 'error');
+                return;
+            }
+
+            generateWebhooksBtn.disabled = true;
+            showSetupStatus('Fetching server info and creating webhooks...', 'info');
+
+            try {
+                const response = await fetch('/setup-webhooks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ serverId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSetupStatus(`✅ Created ${data.count} webhooks for ${data.serverName}! Loading message sender...`, 'success');
+                    
+                    // Save server to localStorage
+                    let servers = JSON.parse(localStorage.getItem('discordServers') || '[]');
+                    
+                    // Remove old entry if exists
+                    servers = servers.filter(s => s.serverId !== serverId);
+                    
+                    // Add new entry
+                    servers.push({
+                        serverId: serverId,
+                        serverName: data.serverName,
+                        serverLogo: data.serverLogo,
+                        channelCount: data.count
+                    });
+                    
+                    localStorage.setItem('discordServers', JSON.stringify(servers));
+                    localStorage.setItem('currentServerId', serverId);
+                    
+                    // Wait a moment then reload to show the message sender
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    showSetupStatus('❌ ' + (data.error || 'Failed. Make sure the bot is in your server.'), 'error');
+                }
+            } catch (error) {
+                showSetupStatus('❌ Error. Make sure the bot is in your server with proper permissions.', 'error');
+            } finally {
+                generateWebhooksBtn.disabled = false;
+            }
+        });
+
+        // Manual webhook save button
+        const saveManualWebhookBtn = document.getElementById('saveManualWebhookBtn');
+        saveManualWebhookBtn.addEventListener('click', async () => {
+            const inviteLink = document.getElementById('manualInviteLink').value;
+            const webhookUrl = document.getElementById('manualWebhookUrl').value;
+
+            if (!inviteLink || !webhookUrl) {
+                showSetupStatus('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Validate webhook URL
+            if (!webhookUrl.startsWith('https://discord.com/api/webhooks/')) {
+                showSetupStatus('Invalid webhook URL. It should start with https://discord.com/api/webhooks/', 'error');
+                return;
+            }
+
+            saveManualWebhookBtn.disabled = true;
+            showSetupStatus('Fetching server and channel info...', 'info');
+
+            try {
+                const response = await fetch('/setup-manual-webhook', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        inviteLink,
+                        webhookUrl
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSetupStatus(`✅ Webhook saved for ${data.serverName}! Loading message sender...`, 'success');
+                    
+                    // Save to localStorage
+                    let servers = JSON.parse(localStorage.getItem('discordServers') || '[]');
+                    const serverId = 'manual_' + Date.now();
+                    
+                    servers.push({
+                        serverId: serverId,
+                        serverName: data.serverName,
+                        serverLogo: data.serverLogo,
+                        channelCount: 1,
+                        isManual: true
+                    });
+                    
+                    localStorage.setItem('discordServers', JSON.stringify(servers));
+                    localStorage.setItem('currentServerId', serverId);
+                    
+                    // Wait a moment then reload
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showSetupStatus('❌ ' + (data.error || 'Failed to save webhook'), 'error');
+                }
+            } catch (error) {
+                showSetupStatus('❌ Network error. Please try again.', 'error');
+            } finally {
+                saveManualWebhookBtn.disabled = false;
+            }
+        });
+
+        function showSetupStatus(message, type) {
+            setupStatus.textContent = message;
+            setupStatus.className = 'status ' + type;
+            setupStatus.style.display = 'block';
+        }
+
+        const colorMap = {
+            red: '#ED4245',
+            green: '#57F287',
+            blue: '#5865F2',
+            yellow: '#FEE75C',
+            purple: '#EB459E',
+            orange: '#F26522'
+        };
+
+        // Image upload handlers
+        function handleImageUpload(fileInput, box, previewElement, dataVariable) {
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const dataUrl = event.target.result;
+                        
+                        // Update data variable
+                        if (dataVariable === 'authorIcon') authorIconData = dataUrl;
+                        if (dataVariable === 'embedImage') embedImageData = dataUrl;
+                        if (dataVariable === 'footerIcon') footerIconData = dataUrl;
+                        
+                        // Update preview box
+                        box.classList.add('has-image');
+                        box.innerHTML = `<img src="${dataUrl}" alt="Uploaded image">`;
+                        
+                        // Update preview
+                        updatePreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            box.addEventListener('click', () => {
+                fileInput.click();
+            });
+        }
+
+        handleImageUpload(authorIconFile, authorIconBox, previewAuthorIcon, 'authorIcon');
+        handleImageUpload(embedImageFile, embedImageBox, previewEmbedImage, 'embedImage');
+        handleImageUpload(footerIconFile, footerIconBox, previewFooterIcon, 'footerIcon');
+
+        function updatePreview() {
+            const customColor = customColorInput.value;
+            
+            // Update server name and logo (from stored values)
+            previewUsername.textContent = serverName;
+            previewAvatar.src = serverLogo;
+            
+            // Update author
+            const authorName = authorNameInput.value;
+            if (authorName || authorIconData) {
+                previewAuthor.style.display = 'flex';
+                previewAuthorName.textContent = authorName || '';
+                if (authorIconData) {
+                    previewAuthorIcon.src = authorIconData;
+                    previewAuthorIcon.style.display = 'block';
+                } else {
+                    previewAuthorIcon.style.display = 'none';
+                }
+            } else {
+                previewAuthor.style.display = 'none';
+            }
+            
+            // Update title
+            const title = titleInput.value;
+            if (title) {
+                previewTitle.textContent = title;
+                previewTitle.style.display = 'block';
+            } else {
+                previewTitle.style.display = 'none';
+            }
+            
+            // Update description
+            const description = descriptionInput.value;
+            if (description) {
+                previewDescription.innerHTML = description.replace(/\n/g, '<br>');
+            } else {
+                previewDescription.innerHTML = '<span class="preview-placeholder">Your description will appear here...</span>';
+            }
+            
+            // Update field
+            const fieldName = fieldNameInput.value;
+            const fieldValue = fieldValueInput.value;
+            if (fieldName || fieldValue) {
+                previewField.style.display = 'block';
+                previewFieldName.textContent = fieldName || '';
+                previewFieldValue.textContent = fieldValue || '';
+            } else {
+                previewField.style.display = 'none';
+            }
+            
+            // Update embed image
+            if (embedImageData) {
+                previewEmbedImage.src = embedImageData;
+                previewEmbedImage.classList.add('visible');
+            } else {
+                previewEmbedImage.classList.remove('visible');
+            }
+            
+            // Update footer
+            const footerText = footerTextInput.value;
+            if (footerText || footerIconData) {
+                previewFooter.style.display = 'flex';
+                previewFooterText.textContent = footerText || '';
+                if (footerIconData) {
+                    previewFooterIcon.src = footerIconData;
+                    previewFooterIcon.style.display = 'block';
+                } else {
+                    previewFooterIcon.style.display = 'none';
+                }
+            } else {
+                previewFooter.style.display = 'none';
+            }
+            
+            // Update color
+            const color = customColor || colorMap[selectedColor];
+            previewEmbed.style.borderLeftColor = color;
+        }
+
+        // Add event listeners for all inputs
+        authorNameInput.addEventListener('input', updatePreview);
+        titleInput.addEventListener('input', updatePreview);
+        descriptionInput.addEventListener('input', updatePreview);
+        fieldNameInput.addEventListener('input', updatePreview);
+        fieldValueInput.addEventListener('input', updatePreview);
+        footerTextInput.addEventListener('input', updatePreview);
+
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedColor = option.dataset.color;
+                customColorInput.value = '';
+                updatePreview();
+            });
+        });
+
+        customColorInput.addEventListener('input', () => {
+            const value = customColorInput.value;
+            if (value && value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                colorOptions.forEach(opt => opt.classList.remove('selected'));
+            }
+            updatePreview();
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const channel = channelSelect.value;
+            const customColor = customColorInput.value;
+
+            submitBtn.disabled = true;
+            showStatus('Sending message...', 'info');
+
+            try {
+                const response = await fetch('/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        channel,
+                        authorName: authorNameInput.value,
+                        authorIcon: authorIconData,
+                        title: titleInput.value,
+                        description: descriptionInput.value,
+                        fieldName: fieldNameInput.value,
+                        fieldValue: fieldValueInput.value,
+                        embedImage: embedImageData,
+                        footerText: footerTextInput.value,
+                        footerIcon: footerIconData,
+                        color: customColor || selectedColor,
+                        serverName,
+                        serverLogo
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus('✅ Message sent successfully!', 'success');
+                    form.reset();
+                    colorOptions[0].classList.add('selected');
+                    selectedColor = 'red';
+                    
+                    // Reset image data and boxes
+                    authorIconData = null;
+                    embedImageData = null;
+                    footerIconData = null;
+                    authorIconBox.classList.remove('has-image');
+                    authorIconBox.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
+                    embedImageBox.classList.remove('has-image');
+                    embedImageBox.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg><div style="margin-top: 8px; font-size: 12px; color: #999;">Click to upload image</div>`;
+                    footerIconBox.classList.remove('has-image');
+                    footerIconBox.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
+                    
+                    updatePreview();
+                } else {
+                    showStatus('❌ ' + (data.error || 'Failed to send message'), 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Network error. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showStatus(message, type) {
+            status.textContent = message;
+            status.className = 'status ' + type;
+            status.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // AI Improve functionality
+        const aiImproveBtn = document.getElementById('aiImproveBtn');
+        
+        aiImproveBtn.addEventListener('click', async () => {
+            // Check if there's any text to improve
+            const hasContent = authorNameInput.value || titleInput.value || descriptionInput.value || 
+                              fieldNameInput.value || fieldValueInput.value || footerTextInput.value;
+            
+            if (!hasContent) {
+                showStatus('⚠️ Please enter some text to improve', 'error');
+                return;
+            }
+
+            aiImproveBtn.disabled = true;
+            aiImproveBtn.textContent = '✨ Improving...';
+            showStatus('🤖 AI is improving your text...', 'info');
+
+            try {
+                const response = await fetch('/ai-improve', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        authorName: authorNameInput.value,
+                        title: titleInput.value,
+                        description: descriptionInput.value,
+                        fieldName: fieldNameInput.value,
+                        fieldValue: fieldValueInput.value,
+                        footerText: footerTextInput.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update form fields with improved text
+                    if (data.authorName) authorNameInput.value = data.authorName;
+                    if (data.title) titleInput.value = data.title;
+                    if (data.description) descriptionInput.value = data.description;
+                    if (data.fieldName) fieldNameInput.value = data.fieldName;
+                    if (data.fieldValue) fieldValueInput.value = data.fieldValue;
+                    if (data.footerText) footerTextInput.value = data.footerText;
+                    
+                    updatePreview();
+                    showStatus('✅ Text improved successfully!', 'success');
+                } else {
+                    showStatus('❌ ' + (data.error || 'Failed to improve text'), 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Network error. Please try again.', 'error');
+            } finally {
+                aiImproveBtn.disabled = false;
+                aiImproveBtn.textContent = '✨ AI Improve';
+            }
+        });
+
+        // Server management functionality
+        const manageServersBtn = document.getElementById('manageServersBtn');
+        const serverModal = document.getElementById('serverModal');
+        const closeModal = document.getElementById('closeModal');
+        const serverList = document.getElementById('serverList');
+        const addServerBtn = document.getElementById('addServerBtn');
+
+        let savedServers = JSON.parse(localStorage.getItem('discordServers') || '[]');
+        let currentServerId = localStorage.getItem('currentServerId') || null;
+
+        // Open modal
+        manageServersBtn.addEventListener('click', () => {
+            renderServerList();
+            serverModal.classList.add('visible');
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            serverModal.classList.remove('visible');
+        });
+
+        // Close on background click
+        serverModal.addEventListener('click', (e) => {
+            if (e.target === serverModal) {
+                serverModal.classList.remove('visible');
+            }
+        });
+
+        // Add new server
+        addServerBtn.addEventListener('click', () => {
+            serverModal.classList.remove('visible');
+            setupSection.classList.remove('hidden');
+            messageSection.classList.add('hidden');
+            document.getElementById('setupServerId').value = '';
+        });
+
+        // Render server list
+        function renderServerList() {
+            if (savedServers.length === 0) {
+                serverList.innerHTML = `
+                    <div class="empty-state">
+                        <p>No servers connected yet.</p>
+                        <p>Click "Add New Server" to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            serverList.innerHTML = savedServers.map(server => `
+                <div class="server-item ${server.serverId === currentServerId ? 'active' : ''}">
+                    <img src="${server.serverLogo}" alt="${server.serverName}" class="server-logo">
+                    <div class="server-info">
+                        <div class="server-name">${server.serverName}</div>
+                        <div class="server-channels">${server.channelCount} channels</div>
+                    </div>
+                    <div class="server-actions">
+                        ${server.serverId !== currentServerId ? `
+                            <button class="btn-select" onclick="selectServer('${server.serverId}')">Select</button>
+                        ` : '<span style="color: #57F287; font-weight: 600;">Active</span>'}
+                        <button class="btn-remove" onclick="removeServer('${server.serverId}')">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Select a server
+        window.selectServer = async function(serverId) {
+            console.log('selectServer called with:', serverId);
+            const server = savedServers.find(s => s.serverId === serverId);
+            if (!server) {
+                console.log('Server not found:', serverId);
+                return;
+            }
+
+            console.log('Switching to server:', server.serverName);
+            // Update server.js with this server's configuration
+            try {
+                const response = await fetch('/setup-webhooks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ serverId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentServerId = serverId;
+                    localStorage.setItem('currentServerId', serverId);
+                    serverModal.classList.remove('visible');
+                    window.location.reload();
+                } else {
+                    alert('Failed to switch server. Please try again.');
+                }
+            } catch (error) {
+                alert('Error switching server. Please try again.');
+            }
+        };
+
+        // Remove a server
+        window.removeServer = function(serverId) {
+            if (confirm('Are you sure you want to remove this server?')) {
+                savedServers = savedServers.filter(s => s.serverId !== serverId);
+                localStorage.setItem('discordServers', JSON.stringify(savedServers));
+                
+                if (serverId === currentServerId) {
+                    currentServerId = null;
+                    localStorage.removeItem('currentServerId');
+                }
+                
+                renderServerList();
+                
+                if (savedServers.length === 0) {
+                    window.location.reload();
+                }
+            }
+        };
+        
+        } // End loadApp function
+
+        // Check authentication on page load
+        checkAuth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+/*
+Ducky - A web search utility with other features.
+Copyright (C) 2021 KoxSosen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+package com.github.koxsosen.commands;
+
+import com.github.koxsosen.Constants;
+import de.btobastian.sdcf4j.Command;
+import de.btobastian.sdcf4j.CommandExecutor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.MessageBuilder;
+
+public class HelpCommand implements CommandExecutor {
+
+    private static final Logger logger = LogManager.getLogger(HelpCommand.class);
+
+    private static final String prefix = Constants.PREFIX();
+
+    @Command(aliases = {Constants.PREFIX + "help", Constants.PREFIX + "halp"}, async = true, description = "Help command for ducky")
+    public void onCommand(TextChannel channel, Message message) {
+
+        new MessageBuilder()
+                .append("<@&1350907647217635389>")
+                .append("\n**Los Angeles Roleplay Bot** - Commands:")
+                .append("\n \n**General Commands:**")
+                .append("\n - Web Search: `" + prefix + "g` ")
+                .append("\n - Random Cat Image: `" + prefix + "cat` " )
+                .append("\n - Random Duck Image: `" + prefix + "duck`" )
+                .append("\n - Random Dog Image: `" + prefix + "dog`")
+                .append("\n - Self Hosted Paste Server: `" + prefix + "paste` " )
+                .append("\n - Website: `" + prefix + "site` " )
+                .append("\n - Invite the bot: `" + prefix + "inv` " )
+                .append("\n - Create Embed: `" + prefix + "embed` " )
+                .append("\n - Help: `" + prefix + "help`  " )
+                .append("\n \n**Moderation Commands** (Requires <@&1350907647217635389>):")
+                .append("\n - Mute User: `" + prefix + "mute @user <time>` " )
+                .append("\n - Kick User: `" + prefix + "kick @user <reason>` " )
+                .append("\n - Ban User: `" + prefix + "ban @user <reason>` " )
+
+                .send(channel);
+
+        logger.info(message.getAuthor());
+    }
+}

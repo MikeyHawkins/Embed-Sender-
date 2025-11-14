@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #5865F2;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            background: #f0f2ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #5865F2;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        .invite-link {
+            background: #5865F2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #5865F2;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #5865F2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4752C4;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .output {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .output h3 {
+            color: #5865F2;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2b2b2b;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            background: #5865F2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .copy-btn:hover {
+            background: #4752C4;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Webhook Setup Tool</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Fill in your server details below</li>
+                <li>Click the invite link to add the bot to your server with Manage Webhooks permission</li>
+                <li>Copy your Server ID (Right-click server icon → Copy Server ID)</li>
+                <li>Click "Generate Webhooks" to create webhooks for all channels</li>
+                <li>Copy the generated code and paste it into server.js, replacing the WEBHOOKS section</li>
+                <li>Update the serverName and serverLogo variables in server.js with your info</li>
+                <li>Kick the bot from your server - the webhooks will still work!</li>
+            </ol>
+            <a href="" id="inviteLink" class="invite-link" target="_blank">📥 Add Bot to Server</a>
+        </div>
+
+        <div class="form-group">
+            <label for="serverName">Server Name</label>
+            <input type="text" id="serverName" placeholder="My Discord Server" required>
+            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                This will appear as the message sender name in Discord
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="serverLogo">Server Logo URL</label>
+            <input type="url" id="serverLogo" placeholder="https://example.com/logo.png" required>
+            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                Direct link to your server's logo image
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="serverId">Server ID</label>
+            <input type="text" id="serverId" placeholder="1234567890123456789" required>
+            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                Right-click your server icon in Discord → Copy Server ID
+            </small>
+        </div>
+
+        <button id="generateBtn">Generate Webhooks for All Channels</button>
+
+        <div class="status" id="status"></div>
+
+        <div class="output" id="output">
+            <h3>1. Copy the WEBHOOKS object and paste it into server.js:</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode()">Copy</button>
+                <pre id="codeOutput"></pre>
+            </div>
+            
+            <h3 style="margin-top: 20px;">2. Update these variables in server.js with your server info:</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyServerInfo()">Copy</button>
+                <pre id="serverInfoOutput"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CLIENT_ID = 'DISCORD_CLIENT_ID_PLACEHOLDER';
+        const inviteLink = document.getElementById('inviteLink');
+        const generateBtn = document.getElementById('generateBtn');
+        const status = document.getElementById('status');
+        const output = document.getElementById('output');
+        const codeOutput = document.getElementById('codeOutput');
+        const serverInfoOutput = document.getElementById('serverInfoOutput');
+
+        fetch('/client-id')
+            .then(r => r.json())
+            .then(data => {
+                const clientId = data.clientId;
+                inviteLink.href = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=536870912&scope=bot`;
+            });
+
+        generateBtn.addEventListener('click', async () => {
+            const serverId = document.getElementById('serverId').value;
+            const serverName = document.getElementById('serverName').value;
+            const serverLogo = document.getElementById('serverLogo').value;
+            
+            if (!serverId || !serverName || !serverLogo) {
+                showStatus('Please fill in all required fields', 'error');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            showStatus('Creating webhooks in all channels...', 'info');
+
+            try {
+                const response = await fetch('/setup-webhooks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ serverId, webhookName: serverName })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus(`✅ Created ${data.count} webhooks successfully!`, 'success');
+                    codeOutput.textContent = data.code;
+                    
+                    // Generate server info code
+                    const serverInfoCode = `let serverName = '${serverName}';\nlet serverLogo = '${serverLogo}';`;
+                    serverInfoOutput.textContent = serverInfoCode;
+                    
+                    output.style.display = 'block';
+                } else {
+                    showStatus('❌ ' + (data.error || 'Failed to create webhooks'), 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Network error. Make sure the bot is in your server.', 'error');
+            } finally {
+                generateBtn.disabled = false;
+            }
+        });
+
+        function showStatus(message, type) {
+            status.textContent = message;
+            status.className = 'status ' + type;
+            status.style.display = 'block';
+        }
+
+        function copyCode() {
+            navigator.clipboard.writeText(codeOutput.textContent);
+            const btn = event.target;
+            btn.textContent = 'Copied!';
+            setTimeout(() => {
+                btn.textContent = 'Copy';
+            }, 2000);
+        }
+
+        function copyServerInfo() {
+            navigator.clipboard.writeText(serverInfoOutput.textContent);
+            const btn = event.target;
+            btn.textContent = 'Copied!';
+            setTimeout(() => {
+                btn.textContent = 'Copy';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+✅ Setup Complete! Copy this code and paste it into your server.js file:
+const WEBHOOKS = {
+    _warm_greetings: 'https://discord.com/api/webhooks/1434349384090386533/TxyQJYtmYj4VDz5UEQBFkYjhsgjiOL21CncLpFkfOETkB1v8bTHjyG5JFYcePE1Fg2cm',
+    _server_rules: 'https://discord.com/api/webhooks/1434349385394684044/aUb7mI-E1i7aIooCagKsAUUUsU88mEgp3sUk1lRRrQbdx1K15ZSpnVB-szNg4J1Uq1z9',
+    _staff_announcements: 'https://discord.com/api/webhooks/1434349387059957953/pwgam56xoJrU3G6vPRBInZrVWxHRnr7B4XaMAUCYLtyZ901Ll9J1UmTXwmDBPJeqaMnL',
+    _server_alerts: 'https://discord.com/api/webhooks/1434349388527833088/_JbQV9U6wyd-ibvZYvDYvsnPdiA1QPpU2cHp-fIl1CGcf2gcigr5QfnivWgJBfThblhM',
+    _bot_commands: 'https://discord.com/api/webhooks/1434349389458968719/_VHE4F-YDlFfOG4fEnxwkTUarrBLB_OE7NMd49SNtCg410DAPcZzrJhYmiugceAVYzpM',
+    _staff_chat: 'https://discord.com/api/webhooks/1434349391556382902/JOF-589uDnKvcfK2ymzCbPDnqBAczfQQMyW5bijzrtasDCVZVjPNmS4g0jxn7pOE6TDN',
+    _ia_review: 'https://discord.com/api/webhooks/1434349392810348564/F8CJi_5SZFTGk8F918HcQL9XAfJc48RFKvztvnyTr0zD8PEiIrYIdM8KGbwqzni9hdIk',
+    _black_listed: 'https://discord.com/api/webhooks/1434349394089476297/LBcD_t8sHfDrDXhx0yQlR1zs-El11AeRD3QXh_8l-mPIhk6CYsUeCjIlRJMbgTLaAqVa',
+    _report_summary: 'https://discord.com/api/webhooks/1434349395490373763/v-jFTWNrzlK_qDBQ24QCFq7R2DsvJnGSziRf59TTdE7IOv_OJr_qej8V4tDT9LkZPLUw',
+    _server_log: 'https://discord.com/api/webhooks/1434349397260374088/JGfvgAiKj2SzIXtq3NvsWf_7U_Ch56JGtfOsQoy488D5L2FEMbl9Fk4viPqKde_lXyZW',
+    _rp_session_rules: 'https://discord.com/api/webhooks/1434349399537877132/Oyko96pibKqbiDcLjadWb0fvdKYDAEuPABH-TxSrPhTD8hjqthrIyt4cIDdLc4o-7iF7',
+    _town_info: 'https://discord.com/api/webhooks/1434349401970708540/BUO_yi3Y6hv8r3-aiGqt1byhjr0f7QYl1yi5nJ0W__pXcCLpCikqthRG3JK0CG2eN1F6',
+    _new_folk: 'https://discord.com/api/webhooks/1434349403522465912/VP_qaDsn4RBhGzGLwojfJr_Jw6drNXlMdCk1maVs7ViT43XUboVFW-w9zd7xpnpLbgpD',
+    _registration: 'https://discord.com/api/webhooks/1434349405250654360/ANDhBuCSJvu9u4LtbekkAqHqd1qBAYq3xrXSU-aQXFw3HG8Qrt49l3aWcevsJwklFy2q',
+    _shift_log: 'https://discord.com/api/webhooks/1434349407326830642/Me9JjFtTlH50_sx5w1aGsBEU9Whud3k2tXm8Dep_EvokH_NYKsyIIg75okQj82LTOCFA',
+    _general_1: 'https://discord.com/api/webhooks/1434349408706625639/3PCX441w7LPNjfwRj-kNF7-hAwL52vgZoZkgm9EKJsrn8yZWsJBraNK4WI1LfqqhaL0X',
+    _general_2: 'https://discord.com/api/webhooks/1434349410644660344/_-jQ89vn3UNmvJ3IljQPj1i7pAqVTFAOll1HNGzRAsK-jPHYf2tRqNHI7yhlGy8oIFdh',
+    _official_media: 'https://discord.com/api/webhooks/1434349412330766407/7rgpBY3k8fnic_B9tCFga3wJve40EBetBoGQtDmpJqoEWs48JNwr9Ls_Sz8kWgnwOdRW',
+    _server_suggestions: 'https://discord.com/api/webhooks/1434349414331191336/3fzzeK8rHSHcguUdQBI5il9laKN6tOz4QilbYT2gyjDpN6wGOlc_nM_KH-cqNfZpM1Sm',
+    _support: 'https://discord.com/api/webhooks/1434349416378138724/V8ZAFMIUnT4cvBQkxw2bjjl-cAVup1kx3V4CJr1-os3vsgqACuZq3F3EOJfO_jSBmYOn',
+    _your_server: 'https://discord.com/api/webhooks/1434349418789732422/gCcNwN2s9p2T55dSY3fcbyo_twebLPRUEOYBLnEn4LW19vMQXhGM-DTi97CegIsA1xl0',
+    _socials: 'https://discord.com/api/webhooks/1434349420320919725/EE363p1IxmeBznBTF2DtZ-rkXRxczAylx1v_hv247m01n_-xv_CEvaL9Jw6KO5TdpmIx'
+};
+
+let serverName = '| Wiskapoka County | Professional RP |';
+let serverLogo = 'https://cdn.discordapp.com/icons/1370855839304388680/289e4714dd2cd62df81f8ea8749a69d3.png';
